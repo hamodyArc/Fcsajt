@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fc-Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Form.css">
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="#">Support</a>
+            <a>/</a>
+            <a href="#">?</a>
+        </div>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="logo.png" alt="FC Logo">
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">My Club</a></li>
+                <li><a href="#">Games</a></li>
+                <li><a href="#">Matches</a></li>
+            </ul>
+            <a href="login_page.html" class="login-btn">LOGIN</a>
+        </nav>
+    </div>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <form action="login.php" method="POST">
+                <input type="text" name="username" placeholder="Username">
+                <input type="password" name="password" placeholder="Password">
+                <label class="checkbox"><input type="checkbox" name="remember" id="remember">Remember me</label>
+                <br>
+                <button type="submit">Login</button>
+                <a class="Forgot" href="#">Forgot password?</a>
+                <br>
+            </form>
+            <p>Don't have an account? <a href="Register_page.html">Sign up</a></p>
+        </div>
+    </div>
+</body>
+</html>
