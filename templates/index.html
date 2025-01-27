@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>FC Site</title>
 </head>
 <body>
@@ -16,14 +15,14 @@
         </div>
         <nav class="navbar">
             <div class="logo">
-                <img src="logo.png" alt="FC Logo">
+                <img src="static/logo.png" alt="FC Logo">
             </div>
             <ul class="nav-links">
                 <li><a href="#">My Club</a></li>
                 <li><a href="#">Games</a></li>
                 <li><a href="#">Matches</a></li>
             </ul>
-            <a href="login_page.html" class="login-btn">LOGIN</a>
+            <a href="{{ url_for('login') }}" class="login-btn">LOGIN</a>
         </nav>
     </div>
 </body>
