@@ -15,9 +15,6 @@ login_db = mysql.connector.connect(
 
 cursor = login_db.cursor()
 
-@app.route('/home')
-def home():
-    return render_template('index.html')
 
 @app.route("/login")
 def login():
@@ -55,12 +52,11 @@ def login_form():
     user = cursor.fetchone()
 
     if user and password == user[2]:
-        session['user'] = {'id': user[0], 'username': user[1], 'email': user[3]}
+        session["user"] = user
         flash('Successfully logged in!', "success")
         return redirect(url_for("home"))
     else:
         return render_template("login.html", message="Invalid credentials")
-
 
 @app.route('/logout')
 def logout():
@@ -68,6 +64,11 @@ def logout():
     flash('Successfully logged out!', "success")
     return redirect(url_for('home'))
 
+@app.route('/')
+def home():
+    if 'user' in session:
+        return render_template('index.html', user=session['user'][1])
+    return render_template('index.html', user=None)
 
 
 
