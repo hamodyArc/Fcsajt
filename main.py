@@ -24,6 +24,13 @@ def login():
 def register():
     return render_template('register.html')
 
+@app.route("/myclub")
+def myclub():
+    if 'user' in session:
+        return render_template('my_club.html', user=session['user'][1])
+    return render_template('my_club.html', user=None)
+
+
 @app.route("/registerform", methods=['POST'])
 def add_user():
     username = request.form['username']
@@ -69,7 +76,6 @@ def home():
     if 'user' in session:
         return render_template('index.html', user=session['user'][1])
     return render_template('index.html', user=None)
-
 
 
 if __name__ == '__main__':

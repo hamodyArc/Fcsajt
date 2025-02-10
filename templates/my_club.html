@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fc- My Club</title>
+    <title>Fc-My Club</title>
 </head>
 <body>
-    
+    {% if user %}
+        <p>Welcome, {{ user }}!</p>
+    {% else %}
+        <p>Welcome, Guest!</p>
+    {% endif %}
 </body>
 </html>
