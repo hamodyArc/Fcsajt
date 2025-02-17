@@ -19,9 +19,9 @@
                 <img src="static/logo.png" alt="FC Logo">
             </div>
             <ul class="nav-links">
-                <li><a href="#">My Club</a></li>
-                <li><a href="#">Games</a></li>
-                <li><a href="#">Matches</a></li>
+                <li><a href="{{ url_for('myclub') }}">My Club</a></li>
+                <li><a href="{{ url_for('myclub') }}">Games</a></li>
+                <li><a href="{{ url_for('matches') }}">Matches</a></li>
             </ul>
             <a href="{{ url_for('login') }}" class="login-btn">LOGIN</a>
         </nav>

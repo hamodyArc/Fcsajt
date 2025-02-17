@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>FC Site</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='match.css') }}">
+
+    <title>FC Matches</title>
 </head>
 <body>
     <div class="container">
@@ -28,6 +30,24 @@
                 <a href="{{ url_for('login') }}" class="login-btn">Login</a>
             {% endif %}
         </nav>
+    </div>
+    <div class="hero">
+        <div class="vsPanel">
+            {% for room in rooms %}
+            
+            <div class="match">
+                <div class="team">
+                    <img src="static/teams/arsenal.png" alt="Arsenal">
+                    <h3>Arsenal</h3>
+                </div>
+                <div class="vs">VS</div>
+                <div class="team">
+                    <img src="static/teams/chelsea.png" alt="Chelsea">
+                    <h3>Chelsea</h3>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </body>
 </html>

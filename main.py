@@ -30,6 +30,12 @@ def myclub():
         return render_template('my_club.html', user=session['user'][1])
     return render_template('my_club.html', user=None)
 
+@app.route("/matches")
+def matches():
+    if 'user' in session:
+        return render_template('matches.html', user=session['user'][1])
+    return render_template('matches.html', user=None)
+
 
 @app.route("/registerform", methods=['POST'])
 def add_user():
