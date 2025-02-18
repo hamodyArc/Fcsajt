@@ -9,6 +9,10 @@ class Varelse:
     def attack(self, target):
         target.hp -= self.dmg
         print(f"{self.namn} attackerar {target.namn} för {self.dmg} skada")
+
+    def heal(self, target, healInt):
+        target.hp += healInt
+        print(f"{self.namn} healar {target.namn} för {healInt} hp")
     
     def is_alive(self):
         return self.hp > 0
@@ -31,7 +35,13 @@ class Monster(Varelse):
     def fearsummon(self):
         print(f"{self.namn} skapar en aura av rädsla")
 
+class Djur(Varelse):
+    def __init__(self, namn, hp, dmg, healInt):
+        super().__init__(namn, hp, dmg)
+        self.healInt = healInt
 
+    def healer(self, target):
+        self.heal(target, self.healInt)
 class Weapon:
     def __init__(self, namn, dmg):
         self.namn = namn
@@ -47,7 +57,11 @@ class Arena:
             target = random.choice(self.varelser)
 
             if attacker != target or not attacker.is_alive() or not target.is_alive():
-                attacker.attack(target)
+                if isinstance(attacker, Djur):
+                    attacker.healer(target)
+                else:
+                    attacker.attack(target)
+            
 
 
         winner = next((v for v in self.varelser if v.is_alive()), None)
@@ -61,6 +75,7 @@ Weapon2 = Weapon("Yxa", 4)
 Monster1 = Monster("Goblin", 10, 2, 1)
 Monster2 = Monster("Ork", 20, 4, 2)
 Fajter1 = Fajter("Krigare", 15, 3, 2)
+djurH = Djur("Häst", 10, 0, 2)
 
-rumble = Arena(Monster1, Monster2, Fajter1)
+rumble = Arena(Monster1, Monster2, Fajter1, djurH)
 rumble.fight()
