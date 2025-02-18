@@ -32,9 +32,10 @@ def myclub():
 
 @app.route("/matches")
 def matches():
-    if 'user' in session:
-        return render_template('matches.html', user=session['user'][1])
-    return render_template('matches.html', user=None)
+    query = "SELECT * FROM matches"
+    cursor.execute(query)
+    matches = cursor.fetchall()
+    return render_template('matches.html', matches=matches)
 
 
 @app.route("/registerform", methods=['POST'])
@@ -82,6 +83,9 @@ def home():
     if 'user' in session:
         return render_template('index.html', user=session['user'][1])
     return render_template('index.html', user=None)
+
+
+
 
 
 if __name__ == '__main__':

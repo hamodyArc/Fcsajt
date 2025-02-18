@@ -33,17 +33,17 @@
     </div>
     <div class="hero">
         <div class="vsPanel">
-            {% for room in rooms %}
+            {% for team in matches %}
             
             <div class="match">
                 <div class="team">
                     <img src="static/teams/arsenal.png" alt="Arsenal">
-                    <h3>Arsenal</h3>
+                    <h3>{{ team[1] }}</h3>
                 </div>
                 <div class="vs">VS</div>
                 <div class="team">
-                    <img src="static/teams/chelsea.png" alt="Chelsea">
-                    <h3>Chelsea</h3>
+                    <img src="static/teams/Liverpool.png" alt="Chelsea">
+                    <h3>{{ team[3] }}</h3>
                 </div>
             </div>
             {% endfor %}
