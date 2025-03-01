@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FC Player Selection</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css.css') }}">
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div class="topbar">
@@ -27,19 +27,19 @@
     <div class="container">
         <div class="player-list">
             <h3>Players</h3>
-            <div onclick="selectPlayer('Messi', 10)">Messi</div>
-            <div onclick="selectPlayer('Ronaldo', 12)">Ronaldo</div>
-            <div onclick="selectPlayer('Neymar', 9)">Neymar</div>
-            <div onclick="selectPlayer('MoSalah', 10)">MoSalah</div>
-            <div onclick="selectPlayer('Alaktaa', 15)">Alaktaa</div>
+            <div onclick="selectPlayer('Messi')">Messi</div>
+            <div onclick="selectPlayer('Ronaldo')">Ronaldo</div>
+            <div onclick="selectPlayer('Neymar')">Neymar</div>
+            <div onclick="selectPlayer('MoSalah')">MoSalah</div>
+            <div onclick="selectPlayer('Alaktaa')">Alaktaa</div>
         </div>
         <button onclick="savePlayers()">Save</button>
         <div class="field-container">
             <div class="field" id="field">
-                <img src="static/fieldFc.png" alt="Football Field">
+                <img src="fieldFc.png" alt="Football Field">
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js.js') }}"></script>
+    <script src="js.js"></script>
 </body>
 </html>
