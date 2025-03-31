@@ -3,6 +3,7 @@ import mysql.connector
 from datetime import timedelta
 import os
 from flask import jsonify
+import random
 
 app = Flask(__name__)
 app.secret_key = "Very_secret_secret_key"
@@ -33,13 +34,14 @@ def myclub():
 
 @app.route("/matches")
 def matches():
-    query1 = "SELECT * FROM teams ORDER BY RAND() LIMIT 1;"
-    cursor.execute(query1)
-    teams1 = cursor.fetchall()
-    query2 = "SELECT * FROM teams ORDER BY RAND() LIMIT 1;"
-    cursor.execute(query2)
-    teams2 = cursor.fetchall()
-    return render_template('matches.html', teams1=teams1, teams2=teams2)
+    query = "SELECT * FROM matches;"
+    cursor.execute(query)
+    teams = cursor.fetchall()
+    if 'user' in session:
+        return render_template('matches.html', teams=teams, user=session['user'][1])
+    return render_template('matches.html', teams=teams, user=None)
+
+
 
 
 @app.route("/registerform", methods=['POST'])
@@ -110,8 +112,18 @@ def save_player():
     owner = session['user'][1]
     cursor.execute("INSERT INTO userplayers (owner, player1, player2, player3) VALUES (%s ,%s ,%s, %s)", (owner, player1_name, player2_name, player3_name))
     cursor.execute("INSERT INTO teams (owner, team_value) VALUES (%s, %s)", (owner, total_team_value))
+
+############################################################################
+    query = "SELECT * FROM teams;"
+    cursor.execute(query)
+    instance_one = cursor.fetchall() 
+
+    teams2 = random.choice(instance_one)
     
+    cursor.execute("INSERT INTO matches (team1_name,team1_value,team2_name,team2_value) VALUES (%s, %s, %s, %s)", (owner, total_team_value, teams2[1], teams2[2]))
+#############################################################################
     login_db.commit()
+
     return jsonify({"message": "Player saved successfully"}), 201
 
 if __name__ == '__main__':
