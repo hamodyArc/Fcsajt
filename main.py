@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import mysql.connector
-from datetime import timedelta
+from datetime import datetime
 import os
 from flask import jsonify
 import random
@@ -17,7 +17,6 @@ login_db = mysql.connector.connect(
 
 cursor = login_db.cursor()
 
-
 @app.route("/login")
 def login():
     return render_template('login.html')
@@ -29,7 +28,7 @@ def register():
 @app.route("/myclub")
 def myclub():
     if 'user' in session:
-        return render_template('my_club.html', user=session['user'][1])
+        return render_template('my_club.html', user=session['user'])
     return render_template('login.html', user=None)
 
 @app.route("/matches")
@@ -38,10 +37,8 @@ def matches():
     cursor.execute(query)
     teams = cursor.fetchall()
     if 'user' in session:
-        return render_template('matches.html', teams=teams, user=session['user'][1])
+        return render_template('matches.html', teams=teams, user=session['user'])
     return render_template('matches.html', teams=teams, user=None)
-
-
 
 
 @app.route("/registerform", methods=['POST'])
@@ -57,7 +54,8 @@ def add_user():
         flash('Email already exists')
         return redirect(url_for('register', messege='Email already exists'))
     else:
-        cursor.execute("INSERT INTO users (username, password, email) VALUES (%s, %s, %s)", (username, password, email))
+        cursor.execute("INSERT INTO users (username, password, email) VALUES (%s, %s, %s)", 
+                       (username, password, email))
         login_db.commit()
         flash('You have successfully registered')
         return redirect(url_for('login'))
@@ -67,8 +65,13 @@ def login_form():
     username = request.form['username']
     # email = request.form['email']
     password = request.form['password']
-
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    query = """
+        SELECT users.*, teams.team_value
+        FROM users
+        LEFT JOIN teams ON users.username = teams.owner
+        WHERE users.username = %s
+    """
+    cursor.execute(query, (username,))
     user = cursor.fetchone()
 
     if user and password == user[2]:
@@ -87,7 +90,7 @@ def logout():
 @app.route('/')
 def home():
     if 'user' in session:
-        return render_template('index.html', user=session['user'][1])
+        return render_template('index.html', user=session['user'])
     return render_template('index.html', user=None)
 
 
@@ -110,17 +113,21 @@ def save_player():
 
     total_team_value = player1_id + player2_id + player3_id
     owner = session['user'][1]
-    cursor.execute("INSERT INTO userplayers (owner, player1, player2, player3) VALUES (%s ,%s ,%s, %s)", (owner, player1_name, player2_name, player3_name))
-    cursor.execute("INSERT INTO teams (owner, team_value) VALUES (%s, %s)", (owner, total_team_value))
+    cursor.execute("INSERT INTO userplayers (owner, player1, player2, player3) VALUES (%s ,%s ,%s, %s)", 
+                   (owner, player1_name, player2_name, player3_name))
+    cursor.execute("INSERT INTO teams (owner, team_value) VALUES (%s, %s)", 
+                   (owner, total_team_value))
 
 ############################################################################
     query = "SELECT * FROM teams;"
     cursor.execute(query)
     instance_one = cursor.fetchall() 
+    match_time = datetime.now()
 
     teams2 = random.choice(instance_one)
     
-    cursor.execute("INSERT INTO matches (team1_name,team1_value,team2_name,team2_value) VALUES (%s, %s, %s, %s)", (owner, total_team_value, teams2[1], teams2[2]))
+    cursor.execute("INSERT INTO matches (team1_name,team1_value,team2_name,team2_value, datee) VALUES (%s, %s, %s, %s, %s)", 
+                   (owner, total_team_value, teams2[1], teams2[2], match_time))
 #############################################################################
     login_db.commit()
 

@@ -23,6 +23,7 @@
                 <li><a href="{{ url_for('myclub') }}">My Club</a></li>
                 <li><a href="{{ url_for('myclub') }}">Games</a></li>
                 <li><a href="{{ url_for('matches') }}">Matches</a></li>
+                <div class="test">{{ user[4] }}</div>
             </ul>
             {% if user %}
                 <a href="{{ url_for('logout') }}" class="login-btn">Logout</a>
@@ -46,20 +47,23 @@
                 </div>
             </div>
             <div class="match-result">
-                <p>Final Score: {{ team[2] }} - {{ team[4] }}</p>
-                <p>
-                    {% if team[2] > team[4] %}
-                        Winner: {{ team[1] }}
-                    {% elif team[2] < team[4] %}
-                        Winner: {{ team[3] }}
-                    {% else %}
-                        It's a Draw!
-                    {% endif %}
-                </p>
+                <p class="stats">Final Score: {{ team[2] }} - {{ team[4] }}</p>
+                
+                {% set match_time = team[5] %}
+                <p>Time left: <span class="timer" data-start-time="{{ match_time }}"></span></p>
+                
+                {% if team[2] > team[4] %}
+                    <p class="stats">Winner: {{ team[1] }}</p>
+                {% elif team[2] < team[4] %}
+                    <p class="stats">Winner: {{ team[3] }}</p>
+                {% else %}
+                    <p class="stats">It's a Draw!</p>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
         
     </div>
 </body>
+<script src="{{ url_for('static', filename='timer.js') }}"></script>
 </html>
