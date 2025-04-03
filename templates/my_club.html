@@ -9,10 +9,10 @@
 </head>
 <body>
     <div class="topbar">
-        <a href="#">Support</a>
-        <a>/</a>
+        <a href="#">Support</a> /
         <a href="#">?</a>
     </div>
+    
     <nav class="navbar">
         <div class="logo">
             <img src="static/logo.png" alt="FC Logo">
@@ -23,26 +23,38 @@
             <li><a href="{{ url_for('matches') }}">Matches</a></li>
         </ul>
         {% if user %}
-        <a href="{{ url_for('logout') }}" class="login-btn">Logout</a>
+            <a href="{{ url_for('logout') }}" class="login-btn">Logout</a>
         {% else %}
-        <a href="{{ url_for('login') }}" class="login-btn">Login</a>
-        {% endif %}    </nav>
+            <a href="{{ url_for('login') }}" class="login-btn">Login</a>
+        {% endif %}
+    </nav>
+
     <div class="container">
+
+
         <div class="player-list">
             <h3>Players</h3>
-            <div onclick="selectPlayer('Messi', 10)">Messi</div>
-            <div onclick="selectPlayer('Ronaldo', 12)">Ronaldo</div>
-            <div onclick="selectPlayer('Neymar', 9)">Neymar</div>
-            <div onclick="selectPlayer('MoSalah', 10)">MoSalah</div>
-            <div onclick="selectPlayer('Alaktaa', 15)">Alaktaa</div>
+            <div onclick="sendPlayer(1)">Ronaldo</div>
+            <div onclick="sendPlayer(2)">Messi</div>
+            <div onclick="sendPlayer(3)">Salah</div>
+            <div onclick="sendPlayer(4)">Mbape</div>
+            <div onclick="sendPlayer(5)">Vini</div>
+            <div onclick="sendPlayer(6)">Neymar</div>
         </div>
-        <button onclick="savePlayers()">Save</button>
+
+        <!-- <button onclick="savePlayers()">Save</button> -->
+        <div class="club_contain">
+            {% for club in clubs %}
+                <p onclick="removeplayer({{ club[0] }})" style="color:blue; cursor:pointer;">{{ club[1] }}</p>
+            {% endfor %}
+        </div>
         <div class="field-container">
             <div class="field" id="field">
                 <img src="static/fieldFc.png" alt="Football Field">
             </div>
         </div>
     </div>
+
     <script src="{{ url_for('static', filename='js.js') }}"></script>
 </body>
 </html>

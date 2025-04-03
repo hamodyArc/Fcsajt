@@ -1,17 +1,16 @@
 .hero {
     width: 60%;
-    height: auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative; /* Allow natural height expansion */
+    top: 100px;
     background-color: #111;
     border-radius: 15px;
-    padding: 20px;
+    padding: 10px;
     display: flex;
+    flex-direction: column; /* Ensure vertical stacking */
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin: 20px auto; /* Center horizontally */
 }
 
 .vsPanel {
