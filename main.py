@@ -89,7 +89,6 @@ def add_user():
 @app.route("/login_form", methods=['POST'])
 def login_form():
     username = request.form['username']
-    # email = request.form['email']
     password = request.form['password']
     cursor.execute("SELECT * FROM userss WHERE username = %s", (username,))
     user = cursor.fetchone()
@@ -114,96 +113,88 @@ def home():
     return render_template('index.html', user=None)
 
 
-
 @app.route('/save_players', methods=['POST'])
 def save_player():
-    data = request.json
-    user_id = session['user'][0]
-    print("user", user_id)
-    if not user_id:
+    if 'user' not in session:
         return jsonify({"message": "User not logged in"}), 401
 
+    data = request.json
+    user_id = session['user'][0] 
     player_id = int(data.get('id'))
-    print("players", player_id)
+
     try:
         cursor.execute("SELECT player_id FROM players WHERE player_id = %s", (player_id,))
         player_data = cursor.fetchone()
-        if player_data:
-            actual_player_id = player_data[0]
+        if not player_data:
+            return jsonify({"message": "Player not found"}), 404
+
+        cursor.execute("SELECT * FROM userplayers WHERE user_id = %s AND player_id = %s", (user_id, player_id))
+        if cursor.fetchone():
+            return jsonify({"message": "Player already added"}), 400
+
+        cursor.execute("SELECT COUNT(*) FROM userplayers WHERE user_id = %s", (user_id,))
+        userplayers_count = cursor.fetchone()[0]
+
+        if userplayers_count < 3:
+            cursor.execute("INSERT INTO userplayers (user_id, player_id) VALUES (%s, %s)", (user_id, player_id))
+            main.commit()
+            return jsonify({"message": "Player saved successfully!"}), 201
+
+        elif userplayers_count == 3:
+            cursor.execute("SELECT COUNT(*) FROM matches WHERE team1_id = %s", (user_id,))
+            if cursor.fetchone()[0] > 0:
+                return jsonify({"message": "You can only save 1 match"}), 400
 
             cursor.execute("""
-                SELECT userss.username, SUM(players.player_rating) AS total_team_value
+                SELECT userss.username, SUM(players.player_rating)
                 FROM userplayers
                 JOIN players ON userplayers.player_id = players.player_id
                 JOIN userss ON userplayers.user_id = userss.user_id
                 WHERE userplayers.user_id = %s
                 GROUP BY userss.username
             """, (user_id,))
-            result = cursor.fetchone()
+            team1_result = cursor.fetchone()
+            if not team1_result:
+                return jsonify({"message": "Unable to calculate team rating"}), 500
 
-            print("result", result)
+            team1_name, team1_value = team1_result
 
-            cursor.execute("SELECT COUNT(*) FROM userplayers WHERE user_id = %s", 
-                           (user_id,))
-            userplayers_count = cursor.fetchone()[0]
-            cursor.execute("SELECT COUNT(*) FROM matches WHERE id = %s", 
-                           (user_id,)) 
-            usermatches_count = cursor.fetchone()[0]
+            cursor.execute("SELECT user_id FROM userss WHERE user_id != %s ORDER BY RAND() LIMIT 1", (user_id,))
+            opponent = cursor.fetchone()
+            if not opponent:
+                return jsonify({"message": "No opponent available"}), 500
 
-            if userplayers_count >= 3:
-                if result:
-                    team1_name = result[0] 
-                    team1_value = result[1]  
-                    print("Team 1 Rating:", team1_value)
+            team2_id = opponent[0]
+            cursor.execute("""
+                SELECT userss.username, SUM(players.player_rating)
+                FROM userplayers
+                JOIN players ON userplayers.player_id = players.player_id
+                JOIN userss ON userplayers.user_id = userss.user_id
+                WHERE userplayers.user_id = %s
+                GROUP BY userss.username
+            """, (team2_id,))
+            team2_result = cursor.fetchone()
+            if not team2_result:
+                return jsonify({"message": "Opponent has no players"}), 500
 
-                    cursor.execute("""
-                        SELECT user_id FROM userss WHERE user_id != %s ORDER BY RAND() LIMIT 1
-                    """, (user_id,))
-                    team2 = cursor.fetchone()
+            team2_name, team2_value = team2_result
 
-                    if team2:
-                        team2_id = team2[0]
-                        cursor.execute("""
-                            SELECT userss.username, SUM(players.player_rating) AS total_team_value
-                            FROM userplayers
-                            JOIN players ON userplayers.player_id = players.player_id
-                            JOIN userss ON userplayers.user_id = userss.user_id
-                            WHERE userplayers.user_id = %s
-                            GROUP BY userss.username
-                        """, (team2_id,))
-                        team2_result = cursor.fetchone()
-                        main.commit()
-                        
-                        if team2_result:
-                            team2_name = team2_result[0] 
-                            team2_value = team2_result[1]  
-                            print("Team 2:", team2_name, "Rating:", team2_value)
+            cursor.execute("""
+                INSERT INTO matches (team1_id, team1_rating, team2_id, team2_rating, time_start)
+                VALUES (%s, %s, %s, %s, NOW())
+            """, (team1_name, team1_value, team2_name, team2_value))
 
-                        if usermatches_count < 1:
-                            print("You can only save 1 match")
-                            cursor.execute("""
-                                INSERT INTO matches (team1_id, team1_rating, team2_id, team2_rating, time_start, id)
-                                VALUES (%s, %s, %s, %s, NOW(), %s)
-                            """, (team1_name, team1_value, team2_name, team2_value, user_id))
-                            main.commit()
-                            print("Match saved!")
-                            return jsonify({"message": "Match saved!"}), 201
-                print("You can only save 3 players")
-                return jsonify({"message": "You can only save 3 players"}), 400
-            else:
-                print("actual_player_id", actual_player_id)
-                cursor.execute("INSERT INTO userplayers (user_id, player_id) VALUES (%s, %s)", 
-                               (user_id, actual_player_id))
+            main.commit()
+            return jsonify({"message": "Match saved!"}), 201
 
-            return jsonify({"message": "Player saved successfully!"})
+        else:
+            return jsonify({"message": "You can only have 3 players"}), 400
 
     except Exception as e:
         print("Error:", str(e))
+        main.rollback()
         return jsonify({"message": "An error occurred"}), 500
 
-    main.commit()
-
-    return jsonify({"message": "Player saved successfully"}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
